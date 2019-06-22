@@ -7,6 +7,14 @@
     </url>
 
     <url>
+        <loc>http://yoursite-url/2019/06/22/UPnP%E5%8D%8F%E8%AE%AE%E5%88%A9%E7%94%A8/</loc>
+        <lastmod>2019-06-22T04:52:19.359Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite-url/2019/06/22/hello-world/</loc>
         <lastmod>2019-06-22T02:52:45.631Z</lastmod>
         <changefreq>weekly</changefreq>
