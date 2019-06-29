@@ -17,7 +17,14 @@
 
     <url>
         <loc>http://yoursite-url/tags/UPnP/</loc>
-        <lastmod>2019-06-22T04:52:19.359Z</lastmod>
+        <lastmod>2019-06-29T02:05:30.310Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://yoursite-url/tags/PWN/</loc>
+        <lastmod>2019-06-29T02:05:38.143Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

