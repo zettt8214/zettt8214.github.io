@@ -143,14 +143,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -210,6 +210,36 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2019/07/15/GOT和PLT/">
+        <h2 class="post-title">
+            Linux中的GOT和PLT
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            地址无关代码（Position-Independent Code）
+如果共享文件（.so文件）需要加载到一个特定的地址才能运行，将造成.so文件的地址冲突问题。
+123456readelf --headers libc.so Program Headers:  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg ......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 骑猪满天飞 on
+            2019-07-15
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#PWN" title="PWN">PWN</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -383,11 +413,11 @@ I publish the whole project f......
             
         
             
-        
+            <a href="/tags/#PWN" title="PWN" rel="3">PWN</a>
             
         
             
-            <a href="/tags/#PWN" title="PWN" rel="2">PWN</a>
+        
             
         
     </div>
@@ -438,6 +468,10 @@ I publish the whole project f......
   <h5>RECENT POSTS</h3>
   <div class="widget">
     <ul>
+      
+        <li>
+          <a href="/2019/07/15/GOT和PLT/">Linux中的GOT和PLT</a>
+        </li>
       
         <li>
           <a href="/2019/07/07/unlink-attack/">unlink attack</a>
