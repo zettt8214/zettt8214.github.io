@@ -136,7 +136,7 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -150,7 +150,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -210,6 +210,40 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/">
+        <h2 class="post-title">
+            D-Link authentication.cgi 缓冲区溢出漏洞
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            D-Link authentiction 缓冲区溢出漏洞
+漏洞介绍
+D-Link DIR-645中authentiction.cgi在读取POST“password”参数时存在缓冲区溢出漏洞。
+漏洞分析
+
+在authenticationcgi_main函数中：
+12345678loc_40B454:la      $t9, strcmpmove    $a0, $s1         # s......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 骑猪满天飞 on
+            2019-09-17
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#IoT" title="IoT">IoT</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -497,6 +531,8 @@ I publish the whole project f......
             
         
             
+            <a href="/tags/#IoT" title="IoT" rel="2">IoT</a>
+            
         
     </div>
 </section>
@@ -548,6 +584,10 @@ I publish the whole project f......
     <ul>
       
         <li>
+          <a href="/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/">D-Link authentication.cgi 缓冲区溢出漏洞</a>
+        </li>
+      
+        <li>
           <a href="/2019/08/31/mips缓冲区溢出/">mips缓冲区溢出</a>
         </li>
       
@@ -561,10 +601,6 @@ I publish the whole project f......
       
         <li>
           <a href="/2019/07/07/unlink-attack/">unlink attack</a>
-        </li>
-      
-        <li>
-          <a href="/2019/06/24/large-bin-attack/">large bin attack</a>
         </li>
       
     </ul>

