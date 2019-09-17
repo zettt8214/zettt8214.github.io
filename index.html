@@ -136,6 +136,13 @@
 
                         
                         <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
                             <a href="/archive/">Archives</a>
                         </li>
                         
@@ -144,13 +151,6 @@
                         
                         <li>
                             <a href="/tags/">Tags</a>
-                        </li>
-                        
-                    
-
-                        
-                        <li>
-                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -210,6 +210,42 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2019/08/31/mips缓冲区溢出/">
+        <h2 class="post-title">
+            mips缓冲区溢出
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            MIPS32 堆栈
+与传统PC的x86相比，MIPS32的函数调用存在以下差异：
+
+MIPS架构中没有EBP（栈底指针）。
+前四个参数分别保存在$a0-$a3寄存器中，剩下的参数从右往左依次入栈
+x86架构中，call命令调用函数时返回地址入栈，而MIPS的调用指令把函数的返回地址存入$ra寄存器。
+
+叶子函数与非叶子函数
+概念：如果一个函数A中不再调用其他任何函数，那么当前的函数A就是一个......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 骑猪满天飞 on
+            2019-08-31
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#mips" title="mips">mips</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -453,6 +489,8 @@ I publish the whole project f......
             
         
             
+        
+            
             <a href="/tags/#PWN" title="PWN" rel="3">PWN</a>
             
         
@@ -510,6 +548,10 @@ I publish the whole project f......
     <ul>
       
         <li>
+          <a href="/2019/08/31/mips缓冲区溢出/">mips缓冲区溢出</a>
+        </li>
+      
+        <li>
           <a href="/2019/08/31/路由器漏洞挖掘环境搭建/">路由器漏洞挖掘环境搭建</a>
         </li>
       
@@ -523,10 +565,6 @@ I publish the whole project f......
       
         <li>
           <a href="/2019/06/24/large-bin-attack/">large bin attack</a>
-        </li>
-      
-        <li>
-          <a href="/2019/06/22/UPnP协议利用/">UPnP协议利用</a>
         </li>
       
     </ul>
