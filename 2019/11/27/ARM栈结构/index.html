@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          ARM栈结构 - hello word
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite-url/2019/11/27/ARM栈结构/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('null')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#ARM" title="ARM">ARM</a>
+                            
+                              <a class="tag" href="/tags/#IoT" title="IoT">IoT</a>
+                            
+                        </div>
+                        <h1>ARM栈结构</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 骑猪满天飞 on
+                            2019-11-27
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hello Word</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1><span id="arm-栈类型">ARM 栈类型</span></h1>
+<p>根据栈生长方向，ARM的栈可分为递增堆栈和递减堆栈。</p>
+<ul>
+<li>递增堆栈：栈向高地址生长</li>
+<li>递减堆栈：栈向低地址生长</li>
+</ul>
+<p>根据栈顶指针的位置，又可分为满堆栈与空堆栈:</p>
+<ul>
+<li>满堆栈：栈指针指向栈顶元素（即最后一个入栈的数据元素）</li>
+<li>空堆栈：栈指针指向与栈顶元素相邻的一个可用书局单元时称为空栈</li>
+</ul>
+<p>由此可以有四种数据栈：<br>
+空递增、空递减、满递增、满递减(sp为栈指针)<br>
+<img src="stacktype.PNG" alt><br>
+四种数据栈对应的Load/Store指令如下：<br>
+<img src="loadstore.PNG" alt></p>
+<p>根据ATPCS规则，我们一般使用FD（FullDescending）类型的数据栈,经常使用的指令为STMFD和LDMFD。</p>
+<p>下面用具体例子说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">.section .text</span><br><span class="line">.global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">	mov r0,#0</span><br><span class="line">	mov r1,#1</span><br><span class="line">	mov r2,#2</span><br><span class="line">	stmfd sp,&#123;r0-r2&#125;</span><br><span class="line">	</span><br><span class="line">	mov r3,#3</span><br><span class="line">	mov r4,#4</span><br><span class="line">	mov r5,#5</span><br><span class="line">	stmfd sp!,&#123;r3-r5&#125;</span><br><span class="line"></span><br><span class="line">	ldmfd sp,&#123;r3-r5&#125;</span><br><span class="line">	ldmfd sp!,&#123;r3-r5&#125;</span><br><span class="line"></span><br><span class="line">pi@raspberrypi:~ $ as test.s -o test.o</span><br><span class="line">pi@raspberrypi:~ $ ld test.o -o test</span><br></pre></td></tr></table></figure>
+<p>使用GDB调试如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">gef➤  b _start</span><br><span class="line">Breakpoint 1 at 0x10054   </span><br><span class="line">gef➤  disassemble _start</span><br><span class="line">Dump of assembler code for function _start:</span><br><span class="line">   0x00010054 &lt;+0&gt;:	mov	r0, #0</span><br><span class="line">   0x00010058 &lt;+4&gt;:	mov	r1, #1</span><br><span class="line">   0x0001005c &lt;+8&gt;:	mov	r2, #2</span><br><span class="line">   0x00010060 &lt;+12&gt;:	stmdb	sp, &#123;r0, r1, r2&#125;</span><br><span class="line">   0x00010064 &lt;+16&gt;:	mov	r3, #3</span><br><span class="line">   0x00010068 &lt;+20&gt;:	mov	r4, #4</span><br><span class="line">   0x0001006c &lt;+24&gt;:	mov	r5, #5</span><br><span class="line">   0x00010070 &lt;+28&gt;:	push	&#123;r3, r4, r5&#125;</span><br><span class="line">   0x00010074 &lt;+32&gt;:	ldm	sp, &#123;r3, r4, r5&#125;</span><br><span class="line">   0x00010078 &lt;+36&gt;:	pop	&#123;r3, r4, r5&#125;</span><br><span class="line">End of assembler dump.</span><br><span class="line">gef➤  r</span><br><span class="line">gef➤  nexti 3</span><br><span class="line">gef➤  p $sp</span><br><span class="line">$2 = (void *) 0x7efff6b0</span><br><span class="line">gef➤  x/10x $sp-12</span><br><span class="line">0x7efff6a4:	0x00000000	0x00000000	0x00000000	0x00000001</span><br><span class="line">0x7efff6b4:	0x7efff7d9	0x00000000	0x7efff7e7	0x7efff7f7</span><br><span class="line">0x7efff6c4:	0x7efff806	0x7efff813</span><br></pre></td></tr></table></figure>
+<p>此时堆栈信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+-------------+  低地址</span><br><span class="line">|0x00000000   |</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000000   | </span><br><span class="line">+-------------+ </span><br><span class="line">|0x00000000   | </span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | &lt;- sp</span><br><span class="line">+-------------+</span><br><span class="line">|0x7efff7d9   |</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000000   |</span><br><span class="line">+-------------+ 高地址</span><br></pre></td></tr></table></figure>
+<p>执行完 stmfd sp,{r0-r2}后堆栈信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">gef➤  next</span><br><span class="line">+-------------+  低地址</span><br><span class="line">|0x00000000   |</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | </span><br><span class="line">+-------------+ </span><br><span class="line">|0x00000002   | </span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | &lt;- sp</span><br><span class="line">+-------------+</span><br><span class="line">|0x7efff7d9   |</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000000   |</span><br><span class="line">+-------------+ 高地址</span><br><span class="line"></span><br><span class="line">stmfd指令压栈顺序为r2,r1,r0且sp不变</span><br><span class="line">与之对应ldmfd sp , &#123;r3-r5&#125;，将栈上上数据传到寄存器，且sp不变</span><br></pre></td></tr></table></figure>
+<p>stmfd sp!,{r3-r5}指令执行后堆栈情况如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">+-------------+  低地址</span><br><span class="line">|0x00000003   | &lt;- sp</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000004   | </span><br><span class="line">+-------------+ </span><br><span class="line">|0x00000005   | </span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | </span><br><span class="line">+-------------+</span><br><span class="line">|0x7efff7d9   |</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000000   |</span><br><span class="line">+-------------+ 高地址</span><br><span class="line">stmfd sp!,&#123;r3-r5&#125;指令：每次入栈前sp加4，与x86 push指令作用相同。</span><br><span class="line">与之对应ldmfd sp! , &#123;r3-r5&#125; 与x86 pop指令作用相同。</span><br></pre></td></tr></table></figure>
+<h1><span id="叶子函数与非叶子函数">叶子函数与非叶子函数</span></h1>
+<p>如果一个函数A中不再调用其他任何函数，那么当前的函数A就是一个叶子函数，否则函数A就是一个非叶子函数。</p>
+<p>ARM中用LR寄存器保存返回地址，被调函数执行完后通过LR返回调用函数。</p>
+<p>当函数为非叶子函数时，因为后续会再次调用其它函数，LR寄存器的值会被改变，所以在进入非叶子函数时会将LR寄存器入栈。叶子函数则不会将LR寄存器入栈。</p>
+<p>具体例子说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">void noleaf(int a,int b)&#123;</span><br><span class="line">	int c;</span><br><span class="line">	c=a+b;</span><br><span class="line">	printf(&quot;%d&quot;,c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int leaf(int a,int b)&#123;</span><br><span class="line">	return a+b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">void main()</span><br><span class="line">&#123;</span><br><span class="line">	int a=1,b=1;</span><br><span class="line">	noleaf(a,b);</span><br><span class="line">	leaf(a,b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">gcc subcall.c -o subcall</span><br></pre></td></tr></table></figure>
+<p>查看汇编代码，非叶子函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">00010408 &lt;noleaf&gt;:</span><br><span class="line">   10408:	e92d4800 	push	&#123;fp, lr&#125;</span><br><span class="line">   1040c:	e28db004 	add	fp, sp, #4</span><br><span class="line">   10410:	e24dd010 	sub	sp, sp, #16</span><br><span class="line">   10414:	e50b0010 	str	r0, [fp, #-16]</span><br><span class="line">   10418:	e50b1014 	str	r1, [fp, #-20]	; 0xffffffec</span><br><span class="line">   1041c:	e51b2010 	ldr	r2, [fp, #-16]</span><br><span class="line">   10420:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec</span><br><span class="line">   10424:	e0823003 	add	r3, r2, r3</span><br><span class="line">   10428:	e50b3008 	str	r3, [fp, #-8]</span><br><span class="line">   1042c:	e51b1008 	ldr	r1, [fp, #-8]</span><br><span class="line">   10430:	e59f000c 	ldr	r0, [pc, #12]	; 10444 &lt;noleaf+0x3c&gt;</span><br><span class="line">   10434:	ebffffab 	bl	102e8 &lt;printf@plt&gt;</span><br><span class="line">   10438:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">   1043c:	e24bd004 	sub	sp, fp, #4</span><br><span class="line">   10440:	e8bd8800 	pop	&#123;fp, pc&#125;</span><br><span class="line">   10444:	00010528 	.word	0x00010528</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">非子叶函数先将fp，与lr入栈。fp为栈底寄存器与x86的ebp作用相同，保存的值为main函数的栈底地址（oldfp），lr中则保存着函数返回main函数后需要执行的下一条指令。</span><br><span class="line"></span><br><span class="line">1040c:	e28db004 	add	fp, sp, #4</span><br><span class="line">10410:	e24dd010 	sub	sp, sp, #16</span><br><span class="line">该指令设置新的栈底，开辟noleaf函数的栈空间</span><br><span class="line"></span><br><span class="line">最后执行1041c:	e8bd8800 	pop	&#123;fp, pc&#125; </span><br><span class="line">恢复main函数fp，然后将pc寄存器置为栈上保存的lr值，执行main函数中需要执行的下一条指令。</span><br></pre></td></tr></table></figure>
+<p>叶子函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">00010448 &lt;leaf&gt;:</span><br><span class="line">   10448:	e52db004 	push	&#123;fp&#125;		; (str fp, [sp, #-4]!)</span><br><span class="line">   1044c:	e28db000 	add	fp, sp, #0</span><br><span class="line">   10450:	e24dd00c 	sub	sp, sp, #12</span><br><span class="line">   10454:	e50b0008 	str	r0, [fp, #-8]</span><br><span class="line">   10458:	e50b100c 	str	r1, [fp, #-12]</span><br><span class="line">   1045c:	e51b2008 	ldr	r2, [fp, #-8]</span><br><span class="line">   10460:	e51b300c 	ldr	r3, [fp, #-12]</span><br><span class="line">   10464:	e0823003 	add	r3, r2, r3</span><br><span class="line">   10468:	e1a00003 	mov	r0, r3</span><br><span class="line">   1046c:	e28bd000 	add	sp, fp, #0</span><br><span class="line">   10470:	e49db004 	pop	&#123;fp&#125;		; (ldr fp, [sp], #4)</span><br><span class="line">   10474:	e12fff1e 	bx	lr</span><br><span class="line"></span><br><span class="line">叶子函数不需要将lr入栈，最后使用bx lr直接跳转返回main函数执行下一条指令。</span><br></pre></td></tr></table></figure>
+<h1><span id="栈结构">栈结构</span></h1>
+<p>在函数调用过程中ARM使用r0-r3四个寄存器传递参数，多余参数的直接放入堆栈中，函数返回值存放到r0。</p>
+<p>进行函数调用时，根据被调函数是否为非叶子函数，判断是否将lr压栈。<br>
+上节非叶子函数，参数a=1,b=1,通过r0、r1传递，被调用时栈结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+-------------+  低地址</span><br><span class="line">|0x00000001   | &lt;- sp,参数b</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | &lt;- 参数a</span><br><span class="line">+-------------+ </span><br><span class="line">|0x00000005   | </span><br><span class="line">+-------------+</span><br><span class="line">|0x00000002   | &lt;-c  局部变量</span><br><span class="line">+-------------+</span><br><span class="line">|    oldfp    |</span><br><span class="line">+-------------+</span><br><span class="line">|      lr     | &lt;- fp</span><br><span class="line">+-------------+ 高地址</span><br></pre></td></tr></table></figure>
+<p>叶子函数被调用时的栈结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">+-------------+  低地址</span><br><span class="line">|0x00000001   | &lt;- sp,b</span><br><span class="line">+-------------+</span><br><span class="line">|0x00000001   | &lt;-sp，参数b</span><br><span class="line">+-------------+ </span><br><span class="line">|0x00000001   | &lt;- 参数a</span><br><span class="line">+-------------+</span><br><span class="line">|xxxxxxxxxx   | </span><br><span class="line">+-------------+</span><br><span class="line">|    oldfp    | &lt;- fp</span><br><span class="line">+-------------+ 高地址</span><br><span class="line"></span><br><span class="line">10464:	e0823003 	add	r3, r2, r3</span><br><span class="line">10468:	e1a00003 	mov	r0, r3</span><br><span class="line">函数返回值保存到r0</span><br></pre></td></tr></table></figure>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/11/27/TP-Link-SR20-本地网络远程代码执行漏洞/" data-toggle="tooltip" data-placement="top" title="TP-Link SR20 本地网络远程代码执行漏洞">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/" data-toggle="tooltip" data-placement="top" title="D-Link authentication.cgi 缓冲区溢出漏洞">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">ARM 栈类型</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">叶子函数与非叶子函数</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">栈结构</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#ARM" title="ARM">ARM</a>
+                        
+                          <a class="tag" href="/tags/#IoT" title="IoT">IoT</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://beantech.org" target="_blank">Bean Tech</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://yoursite-url/2019/11/27/ARM栈结构/";
+    var disqus_url = "http://yoursite-url/2019/11/27/ARM栈结构/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/zettt8214">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 骑猪满天飞 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite-url/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite-url/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

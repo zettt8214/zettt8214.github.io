@@ -37,8 +37,15 @@
     </url>
 
     <url>
+        <loc>http://yoursite-url/tags/ARM/</loc>
+        <lastmod>2019-11-27T12:55:07.384Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://yoursite-url/tags/IoT/</loc>
-        <lastmod>2019-09-17T14:30:18.379Z</lastmod>
+        <lastmod>2019-11-27T12:57:11.986Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

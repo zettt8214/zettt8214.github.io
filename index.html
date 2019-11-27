@@ -136,7 +136,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -150,7 +150,7 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -210,6 +210,85 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2019/11/27/TP-Link-SR20-本地网络远程代码执行漏洞/">
+        <h2 class="post-title">
+            TP-Link SR20 本地网络远程代码执行漏洞
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            环境搭建
+漏洞的介绍与环境搭建可以看SeeBug对于此漏洞的复现文章
+链接：重现 TP-Link SR20 本地网络远程代码执行漏洞
+TDDP协议介绍介绍
+TDDP是TP-Link用于调试的简单协议，这个协议使用一个数据包，在载荷中使用不同的消息类型来完成请求或者命令的传递。下面的图片是TDDP的数据包信息
+
+官方介绍：
+https://patentimages.storage.google......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 骑猪满天飞 on
+            2019-11-27
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#IoT" title="IoT">IoT</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2019/11/27/ARM栈结构/">
+        <h2 class="post-title">
+            ARM栈结构
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            ARM 栈类型
+根据栈生长方向，ARM的栈可分为递增堆栈和递减堆栈。
+
+递增堆栈：栈向高地址生长
+递减堆栈：栈向低地址生长
+
+根据栈顶指针的位置，又可分为满堆栈与空堆栈:
+
+满堆栈：栈指针指向栈顶元素（即最后一个入栈的数据元素）
+空堆栈：栈指针指向与栈顶元素相邻的一个可用书局单元时称为空栈
+
+由此可以有四种数据栈：
+空递增、空递减、满递增、满递减(sp为栈指针)
+
+四种数据栈对应的Load/......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 骑猪满天飞 on
+            2019-11-27
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#ARM" title="ARM">ARM</a>
+            
+              <a href="/tags/#IoT" title="IoT">IoT</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -519,6 +598,12 @@ I publish the whole project f......
     <div class="tags">
         
             
+        
+            
+            <a href="/tags/#IoT" title="IoT" rel="4">IoT</a>
+            
+        
+            
             <a href="/tags/#PWN" title="PWN" rel="3">PWN</a>
             
         
@@ -528,10 +613,6 @@ I publish the whole project f......
         
             
         
-            
-        
-            
-            <a href="/tags/#IoT" title="IoT" rel="2">IoT</a>
             
         
     </div>
@@ -584,6 +665,14 @@ I publish the whole project f......
     <ul>
       
         <li>
+          <a href="/2019/11/27/TP-Link-SR20-本地网络远程代码执行漏洞/">TP-Link SR20 本地网络远程代码执行漏洞</a>
+        </li>
+      
+        <li>
+          <a href="/2019/11/27/ARM栈结构/">ARM栈结构</a>
+        </li>
+      
+        <li>
           <a href="/2019/09/17/D-Link-authentication-cgi-缓冲区溢出漏洞/">D-Link authentication.cgi 缓冲区溢出漏洞</a>
         </li>
       
@@ -593,14 +682,6 @@ I publish the whole project f......
       
         <li>
           <a href="/2019/08/31/路由器漏洞挖掘环境搭建/">路由器漏洞挖掘环境搭建</a>
-        </li>
-      
-        <li>
-          <a href="/2019/07/15/GOT和PLT/">Linux中的GOT和PLT</a>
-        </li>
-      
-        <li>
-          <a href="/2019/07/07/unlink-attack/">unlink attack</a>
         </li>
       
     </ul>
